@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="js/jquery-3.3.1.js"></script>
+
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+
+
+    <title>Création fiche utilisateur</title>
+
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/default.css" rel="stylesheet">    
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <div class="row">
+            <h1 class="center mb40">Fiche d'enregistrement client</h1>
+        </div>
+
+        <div class="row">
+            <form class="col-md-8 needs-validation" novalidate>
+                <div class="form-row">
+                    <div class="form-group col-md-2 field-not-ok">
+                        <select id="civilite" class="form-control" required>
+                            <option value="" selected="selected"></option>
+                            <option value="Mr">Mr</option>
+                            <option value="Mme">Mme</option>
+                        </select>
+                        <div class="is_invalid">
+                            Merci de choisir Mr ou Mme.
+                        </div>
+
+                    </div>
+
+                    <div class="form-group col-md-5 field-not-ok">
+                        <input type="text" name="nom" id="nom" class="form-control" placeholder="Nom" required>
+                        <div class="is_invalid">
+                            Merci de renseigner le nom.
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-5">
+                        <input type="text" name="prenom" id="prenom" class="form-control" placeholder="Prénom">
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12 field-not-ok">
+                    <label for="email">E-mail *</label>
+                    <input type="text" name="email" id="email" class="form-control" required>
+                    <div class="is_invalid">
+                        Merci de renseigner l'E-mail.
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12 field-not-ok">
+                    <label for="mdp">Mot de passe *</label>
+                    <input type="password" name="mdp" id="mdp" class="form-control" placeholder="Mot de passe" required>
+                    <div class="is_invalid">
+                        Merci de renseigner le mot de passe.
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label for="profession">Profession</label>
+                    <input type="text" name="profession" id="profession" class="form-control">
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label for="observation">Observation</label>
+                    <textarea id="observation" name="observation" class="form-control"></textarea>
+                </div>
+
+
+                <div class="form-group text-right col-md-12">
+                    <input type="button" value="OK" name="ok" id="ok" class="btn btn-primary" disabled>
+                </div>
+            </form>
+
+    
+        </div>    
+
+    </div>
+
+    <script>
+      $(function() {
+
+        function isEmail(email) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return regex.test(email);
+        }
+
+        $('form').on('focus', '.form-control', function(){
+            var nb = $('form .field-not-ok');
+            if( nb.length == 0 ) {
+                $('#ok').removeAttr('disabled');
+            }
+
+            var parent = $(this).parent();
+            $(this).next('div').hide();
+            $(parent).toggleClass('has-error');
+        });
+
+        $('form').on('blur', '.form-control', function(){
+            var isRequire = $(this).attr('required');
+
+            if( isRequire!='undefined' ) {
+                var parent = $(this).parent();
+                if( $(this).val()=='' ) {
+                    $(this).focus();
+                    $(parent).toggleClass('has-error');
+                    $(this).next('div').show();
+                } else {
+                    if( $(this).attr('id') == 'email' ) {
+                        if( !isEmail($(this).val() ) ) {
+                            $(this).focus();
+                            $(parent).toggleClass('has-error');
+                            $(this).next('div').show();
+                        }
+                    } 
+                    $(parent).removeClass('field-not-ok');
+                    $(parent).toggleClass('has-error');
+                }
+            } 
+        });
+
+
+
+
+        $('#ok').click(function() {
+            var jSonString = '{';
+            $('form .form-control').each(function(i){
+
+                jSonString += $(this).attr('id') + ':' + $(this).val() + ',';
+            });
+            jSonString += '}';
+            console.log( jSonString );
+
+
+    /*        var jSonString = '{civilite:' + civilite + ',';
+            jSonString += 'nom:' + nom + ',';
+            jSonString += '}';*/
+
+
+            $.ajax({
+                type: 'POST',
+                url: 'ajax3.php',
+                data: jSonString,
+                timeout: 3000,
+                success: function(data) {
+                 // alert(data); 
+                 $('#r').html(data);
+                },
+                error: function() {
+                  alert('La requête n\'a pas abouti'); }
+                }
+            ); 
+        });
+      });  
+
+    </script>  
+
+</body>
+</html>    

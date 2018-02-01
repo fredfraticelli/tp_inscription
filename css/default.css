@@ -1,0 +1,17 @@
+.center {
+	text-align: center;
+}
+
+.mb40 {
+	margin-bottom: 40px;
+}
+input[type=text], 
+input[type=password], 
+textarea, select {
+	background-color: #eee!important;
+}
+
+.is_invalid {
+	display: none;
+	color: #cc0000;
+}
